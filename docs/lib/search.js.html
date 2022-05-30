@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>./lib/search.js annotated source</title>
-    <link rel="stylesheet" href="/main.css">
+    <link rel="stylesheet" href="/libsearch/main.css">
 </head>
 
 <body>
@@ -13,61 +13,64 @@
         <div class="line">
             <div class="doc">
                 <h1>./lib/search.js <span class="fade">annotated source</span></h1>
-                <em><a class="back" href="/">Back to index</a></em>
+                <em><a class="back" href="/libsearch/">Back to index</a></em>
             </div>
             <pre></pre>
         </div>
-        <div class="line"><div class="doc"><h1 id="basic-principles">Basic principles</h1>
+        <div class="line"><div class="doc"><h2 id="basic-principles">Basic principles</h2>
 </div><pre class="source javascript"><strong class="lineNumber">2</strong></pre></div>
 <div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber"></strong></pre></div>
 <div class="line"><div class="doc"><p>TODO: Explain stuff...</p>
 </div><pre class="source javascript"><strong class="lineNumber">4</strong></pre></div>
 <div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber"></strong></pre></div>
+<div class="line"><div class="doc"><h2 id="implementation">Implementation</h2>
+</div><pre class="source javascript"><strong class="lineNumber">6</strong></pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber"></strong></pre></div>
 <div class="line"><div class="doc"><p>To turn every potential query into a regular expression, we need to be able to escape key characters.</p>
-</div><pre class="source javascript"><strong class="lineNumber">6</strong>function escapeForRegExp(text) {</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">7</strong>    return text.replace(/[.*+?^${}[\]()|\\]/g, '\\$1');</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">8</strong>}</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">9</strong></pre></div>
+</div><pre class="source javascript"><strong class="lineNumber">8</strong>function escapeForRegExp(text) {</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">9</strong>    return text.replace(/[.*+?^${}[\]()|\\]/g, '\\$1');</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">10</strong>}</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">11</strong></pre></div>
 <div class="line"><div class="doc"><p>The main search function takes: - <code>query</code>, the search query text - <code>items</code>, the list of items to search - <code>by</code>, which is a predicate (string, number, or function) that takes an item from the items list and returns the string that should be matched with the query  Options include - <code>caseSensitive</code>, which is self-explanatory - <code>mode</code>: which is &#39;word&#39; or &#39;prefix&#39; (default)</p>
-</div><pre class="source javascript"><strong class="lineNumber">18</strong>export function search(query, items, by = x =&#62; x, options) {</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">19</strong>    options = {</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">20</strong>        caseSensitive: false,</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">21</strong>        mode: 'prefix',</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">22</strong>        ...options,</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">23</strong>    }</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">24</strong></pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">25</strong>    function countMatches(s, regexp) {</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">26</strong>        let i = 0;</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">27</strong>        const exec = regexp.exec.bind(regexp);</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">28</strong>        while (exec(s) !== null) {</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">29</strong>            i ++;</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">30</strong>        }</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">31</strong>        return i;</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">32</strong>    }</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">33</strong></pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">34</strong>    const words = query</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">35</strong>        .trim()</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">36</strong>        .split(' ')</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">37</strong>        .filter(s =&#62; s !== '');</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">38</strong></pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">39</strong>    if (words.length === 0) {</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">40</strong>        return items;</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">41</strong>    }</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">42</strong></pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">43</strong>    const suggestions = words.reduce((suggestions, word, i) =&#62; {</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">44</strong>        const isLastWord = i + 1 === words.length;</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">45</strong>        const regexp = new RegExp(</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">46</strong>            '(^|\\W)' + escapeForRegExp(word) + (isLastWord ? '' : '($|\\W)'),</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">47</strong>            'img'</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">48</strong>        );</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">49</strong>        return suggestions.filter(sugg =&#62; countMatches(by(sugg), regexp) &#62; 0);</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">50</strong>    }, items);</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">51</strong></pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">52</strong>    // TODO: sort by TF-IDF</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">53</strong>    return sortBy(suggestions, by);</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">54</strong>}</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">55</strong></pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">56</strong></pre></div>
+</div><pre class="source javascript"><strong class="lineNumber">20</strong>export function search(query, items, by = x =&#62; x, options) {</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">21</strong>    options = {</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">22</strong>        caseSensitive: false,</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">23</strong>        mode: 'prefix',</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">24</strong>        ...options,</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">25</strong>    }</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">26</strong></pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">27</strong>    function countMatches(s, regexp) {</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">28</strong>        let i = 0;</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">29</strong>        const exec = regexp.exec.bind(regexp);</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">30</strong>        while (exec(s) !== null) {</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">31</strong>            i ++;</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">32</strong>        }</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">33</strong>        return i;</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">34</strong>    }</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">35</strong></pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">36</strong>    const words = query</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">37</strong>        .trim()</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">38</strong>        .split(' ')</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">39</strong>        .filter(s =&#62; s !== '');</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">40</strong></pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">41</strong>    if (words.length === 0) {</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">42</strong>        return items;</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">43</strong>    }</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">44</strong></pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">45</strong>    const suggestions = words.reduce((suggestions, word, i) =&#62; {</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">46</strong>        const isLastWord = i + 1 === words.length;</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">47</strong>        const regexp = new RegExp(</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">48</strong>            '(^|\\W)' + escapeForRegExp(word) + (isLastWord ? '' : '($|\\W)'),</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">49</strong>            'img'</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">50</strong>        );</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">51</strong>        return suggestions.filter(sugg =&#62; countMatches(by(sugg), regexp) &#62; 0);</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">52</strong>    }, items);</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">53</strong></pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">54</strong>    // TODO: sort by TF-IDF</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">55</strong>    return sortBy(suggestions, by);</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">56</strong>}</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">57</strong></pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">58</strong></pre></div>
     </main>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/github-gist.min.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
