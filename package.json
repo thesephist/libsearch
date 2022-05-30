@@ -1,0 +1,23 @@
+{
+  "name": "libsearch",
+  "version": "1.0.0",
+  "description": "Small, fast full-text search",
+  "main": "src/index.js",
+  "repository": "git@github.com:thesephist/libsearch.git",
+  "author": "Linus Lee <linus@thesephist.com>",
+  "license": "MIT",
+  "scripts": {
+    "test": "mocha",
+    "lint": "eslint ./lib/*.js ./src/*.js",
+    "fmt": "eslint --fix ./lib/*.js ./src/*.js",
+    "build": "",
+    "clean": "",
+    "docs": "litterate --config litterate.config.js"
+  },
+  "devDependencies": {
+    "chai": "^4.3.6",
+    "eslint": "^8.16.0",
+    "litterate": "^0.1.4",
+    "mocha": "^10.0.0"
+  }
+}
