@@ -1,4 +1,9 @@
 module.exports = {
+    'root': true,
+    'parser': '@typescript-eslint/parser',
+    'plugins': [
+        '@typescript-eslint',
+    ],
     'env': {
         'browser': true,
         'commonjs': true,
@@ -6,7 +11,7 @@ module.exports = {
     },
     'extends': 'eslint:recommended',
     'parserOptions': {
-        'ecmaVersion': 2018,
+        'ecmaVersion': 2020,
         'sourceType': 'module',
     },
     'rules': {

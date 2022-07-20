@@ -1,0 +1,29 @@
+{
+  "files": [
+    "lib/search.ts"
+  ],
+  "compilerOptions": {
+    "strict": true,
+
+    // compilation and bundling
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "outDir": "./dist/",
+    "sourceMap": true,
+    "target": "esnext",
+    "declaration": true,
+
+    // type checking and translation
+    "allowJs": true,
+    "allowUnreachableCode": false,
+    "experimentalDecorators": true,
+    "lib": ["esnext", "dom"],
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "strictNullChecks": true,
+    "useDefineForClassFields": true
+  }
+}

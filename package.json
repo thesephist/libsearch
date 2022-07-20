@@ -2,22 +2,40 @@
   "name": "libsearch",
   "version": "1.0.0",
   "description": "Small, fast full-text search",
-  "main": "src/index.js",
+  "main": "dist/index.js",
+  "types": "dist/lib/search.d.ts",
   "repository": "git@github.com:thesephist/libsearch.git",
   "author": "Linus Lee <linus@thesephist.com>",
   "license": "MIT",
+  "type": "module",
+  "keywords": [
+    "search"
+  ],
+  "files": [
+    "lib",
+    "dist"
+  ],
   "scripts": {
-    "test": "mocha",
-    "lint": "eslint ./lib/*.js ./src/*.js",
-    "fmt": "eslint --fix ./lib/*.js ./src/*.js",
-    "build": "",
-    "clean": "",
-    "docs": "litterate --config litterate.config.js"
+    "test": "mocha test/search.js",
+    "lint": "eslint *.js ./lib/* ./src/* ./test/*",
+    "fmt": "eslint --fix *.js ./lib/* ./src/* ./test/*",
+    "build:w": "tsc -w",
+    "build:tsc": "tsc",
+    "build:cjs": "webpack --config webpack.config.js",
+    "build:all": "tsc && webpack --config webpack.config.js",
+    "clean": "rm -r dist/",
+    "docs": "litterate --config litterate.config.cjs"
   },
   "devDependencies": {
-    "chai": "^4.3.6",
-    "eslint": "^8.16.0",
+    "@babel/core": "^7.18.9",
+    "@typescript-eslint/eslint-plugin": "^5.30.7",
+    "@typescript-eslint/parser": "^5.30.7",
+    "babel-loader": "^8.2.5",
+    "eslint": "^8.20.0",
     "litterate": "^0.1.4",
-    "mocha": "^10.0.0"
+    "mocha": "^10.0.0",
+    "typescript": "^4.7.4",
+    "webpack": "^5.73.0",
+    "webpack-cli": "^4.10.0"
   }
 }

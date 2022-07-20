@@ -1,4 +1,4 @@
-import {search} from '../lib/search.js';
+import {search} from '../dist/search.js';
 
 window.libsearch = {
     search,
