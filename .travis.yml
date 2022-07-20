@@ -1,6 +1,5 @@
 language: node_js
 node_js:
-  - 'node'
   - 'lts/*'
 env:
   - NODE_TEST_ENV=production
