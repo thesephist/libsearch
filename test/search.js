@@ -1,11 +1,9 @@
 import {strict as assert} from 'node:assert';
 import {search} from '../dist/search.js';
 
-function item(name) {
-    return {name};
-}
+const item = name => ({name});
 
-//> Most of the tests work on this pre-set list of items to search
+//> Most of the tests operate on this pre-set list of items to search
 const ITEMS = [
     item('Linus Lee'),
     item('@thesephist'),
@@ -30,6 +28,10 @@ describe('basic search', () => {
             item('linuslee'),
             item('linus is a person'),
         ]);
+    });
+
+    it('search does not match from middle of words', () => {
+        assert.deepEqual(search(ITEMS, 'w', x => x.name), []);
     });
 
     it('multi-word search returns correct result', () => {
@@ -96,7 +98,6 @@ describe('custom search-by predicates', () => {
             ], 'uni of cali'),
             [
                 'uni of california',
-                'university of california',
             ]
         );
     });
@@ -109,20 +110,35 @@ describe('custom search-by predicates', () => {
 });
 
 describe('search modes', () => {
-    it('in mode: prefix, every query word can be incomplete', () => {
-        assert.deepEqual(search(ITEMS, 'linu le', x => x.name, {mode: 'prefix'}), [
-            item('Linus Lee'),
-        ])
+    it('in mode: word, search does not match if any words are incomplete', () => {
+        assert.deepEqual(search(ITEMS, 'linu lee', x => x.name, {mode: 'word'}), []);
     });
 
-    it('in mode: word, search does not match if non-last words are incomplete', () => {
-        assert.deepEqual(search(ITEMS, 'linu lee', x => x.name, {mode: 'word'}), []);
+    it('in mode: prefix, every query word may be incomplete', () => {
+        assert.deepEqual(search(ITEMS, 'linu le', x => x.name, {mode: 'prefix'}), [
+            item('Linus Lee'),
+        ]);
+    });
+
+    it('in mode: autocomplete, only the last query word may be incomplete', () => {
+        assert.deepEqual(search(ITEMS, 'linus le', x => x.name, {mode: 'autocomplete'}), [
+            item('Linus Lee'),
+        ]);
+        assert.deepEqual(search(ITEMS, 'linu le', x => x.name, {mode: 'autocomplete'}), []);
     });
 });
 
 describe('case sensitivity', () => {
     it('caseSensitive: true omits non-matching results', () => {
         assert.deepEqual(search(ITEMS, 'l', x => x.name, {caseSensitive: true}), [
+            item('linuslee'),
+            item('linus is a person'),
+        ]);
+    });
+
+    it('caseSensitive: false includes case-insensitive results', () => {
+        assert.deepEqual(search(ITEMS, 'l', x => x.name, {caseSensitive: false}), [
+            item('Linus Lee'),
             item('linuslee'),
             item('linus is a person'),
         ]);
