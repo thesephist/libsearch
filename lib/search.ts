@@ -77,7 +77,12 @@ export function search<T>(items: T[], query: string, by: (_it: T) => any = x => 
             if (count === 0) {
                 return false;
             }
-            tfidf.set(sugg, count / text.length);
+            //> TF-IDF weighting per-term
+            tfidf.set(
+                sugg,
+                (tfidf.get(sugg) || 0) +
+                    count / text.length * Math.log(items.length / suggestions.length),
+            );
             return true;
         })
     }, items);
