@@ -26,12 +26,14 @@
 <div class="line"><div class="doc"><h2 id="implementation">Implementation</h2>
 </div><pre class="source javascript"><strong class="lineNumber">6</strong></pre></div>
 <div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber"></strong></pre></div>
-<div class="line"><div class="doc"><p>To turn every potential query into a regular expression, we need to be able to escape key characters.</p>
+<div class="line"><div class="doc"><p>To turn every potential query into a regular expression, we need to be able
+to escape key characters.</p>
 </div><pre class="source javascript"><strong class="lineNumber">9</strong>function escapeForRegExp(text: string): string {</pre></div>
 <div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">10</strong>    return text.replace(/[.*+?^${}[\]()|\\]/g, '\\$1');</pre></div>
 <div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">11</strong>}</pre></div>
 <div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">12</strong></pre></div>
-<div class="line"><div class="doc"><p>Utility function for sorting an array by some predicate, rather than a comparator function.</p>
+<div class="line"><div class="doc"><p>Utility function for sorting an array by some predicate, rather than a
+comparator function.</p>
 </div><pre class="source javascript"><strong class="lineNumber">15</strong>function sortBy&#60;T&#62;(items: T[], by: (_it: T) =&#62; any): T[] {</pre></div>
 <div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">16</strong>    return items.sort((a, b) =&#62; {</pre></div>
 <div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">17</strong>        const aby = by(a);</pre></div>
@@ -46,7 +48,17 @@
 <div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">26</strong>    });</pre></div>
 <div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">27</strong>}</pre></div>
 <div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">28</strong></pre></div>
-<div class="line"><div class="doc"><p>The main search function takes: - <code>items</code>, the list of items to search - <code>query</code>, the search query text - <code>by</code>, which is a predicate (string, number, or function) that takes an item from the items list and returns the string that should be matched with the query  Options include - <code>caseSensitive</code>, which is self-explanatory - <code>mode</code>: which is &#39;word&#39; or &#39;prefix&#39; (default)</p>
+<div class="line"><div class="doc"><p>The main search function takes:</p>
+<ul>
+<li><code>items</code>, the list of items to search</li>
+<li><code>query</code>, the search query text</li>
+<li><code>by</code>, which is a predicate (string, number, or function) that takes an item from the items list and returns the string that should be matched with the query</li>
+</ul>
+<p>Options include</p>
+<ul>
+<li><code>caseSensitive</code>, which is self-explanatory</li>
+<li><code>mode</code>: which is &#39;word&#39; or &#39;prefix&#39; (&#39;prefix&#39; by default)</li>
+</ul>
 </div><pre class="source javascript"><strong class="lineNumber">37</strong>export function search&#60;T&#62;(items: T[], query: string, by: (_it: T) =&#62; any = x =&#62; x, {</pre></div>
 <div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">38</strong>    caseSensitive = false,</pre></div>
 <div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">39</strong>    mode = 'prefix',</pre></div>
@@ -90,15 +102,20 @@
 <div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">77</strong>            if (count === 0) {</pre></div>
 <div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">78</strong>                return false;</pre></div>
 <div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">79</strong>            }</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">80</strong>            tfidf.set(sugg, count / text.length);</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">81</strong>            return true;</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">82</strong>        })</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">83</strong>    }, items);</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">84</strong></pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">85</strong>    return sortBy(suggestions, sugg =&#62; tfidf.get(sugg));</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">86</strong>}</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">87</strong></pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">88</strong></pre></div>
+<div class="line"><div class="doc"><p>TF-IDF weighting per-term</p>
+</div><pre class="source javascript"><strong class="lineNumber">81</strong>            tfidf.set(</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">82</strong>                sugg,</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">83</strong>                (tfidf.get(sugg) || 0)</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">84</strong>                    + (count / text.length * Math.log(items.length / suggestions.length))</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">85</strong>            );</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">86</strong>            return true;</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">87</strong>        })</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">88</strong>    }, items);</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">89</strong></pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">90</strong>    return sortBy(suggestions, sugg =&#62; tfidf.get(sugg));</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">91</strong>}</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">92</strong></pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">93</strong></pre></div>
     </main>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/github-gist.min.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>

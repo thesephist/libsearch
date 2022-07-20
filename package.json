@@ -32,7 +32,7 @@
     "@typescript-eslint/parser": "^5.30.7",
     "babel-loader": "^8.2.5",
     "eslint": "^8.20.0",
-    "litterate": "^0.1.4",
+    "litterate": "^0.1.5",
     "mocha": "^10.0.0",
     "typescript": "^4.7.4",
     "webpack": "^5.73.0",
