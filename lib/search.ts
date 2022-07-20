@@ -33,7 +33,7 @@ function sortBy<T>(items: T[], by: (_it: T) => any): T[] {
 //
 //  Options include
 //  - `caseSensitive`, which is self-explanatory
-//  - `mode`: which is 'word' or 'prefix' (default)
+//  - `mode`: which is 'word' or 'prefix' ('prefix' by default)
 export function search<T>(items: T[], query: string, by: (_it: T) => any = x => x, {
     caseSensitive = false,
     mode = 'prefix',
@@ -80,8 +80,8 @@ export function search<T>(items: T[], query: string, by: (_it: T) => any = x => 
             //> TF-IDF weighting per-term
             tfidf.set(
                 sugg,
-                (tfidf.get(sugg) || 0) +
-                    count / text.length * Math.log(items.length / suggestions.length),
+                (tfidf.get(sugg) || 0)
+                    + (count / text.length * Math.log(items.length / suggestions.length))
             );
             return true;
         })
