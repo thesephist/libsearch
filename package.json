@@ -1,6 +1,6 @@
 {
   "name": "libsearch",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Small, fast full-text search",
   "main": "dist/search.js",
   "types": "dist/search.d.ts",
