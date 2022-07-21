@@ -65,7 +65,7 @@ function sortBy<T>(items: T[], by: (_it: T) => any): T[] {
 //  - `caseSensitive`, which is self-explanatory
 //  - `mode`: which is 'word', 'prefix', or 'autocomplete' ('autocomplete' by
 //    default), determining the way in which partial matches are processed
-export function search<T>(items: T[], query: string, by: (_it: T) => any = x => x, {
+export function search<T>(items: T[], query: string, by: (_it: T) => string = x => String(x), {
     caseSensitive = false,
     mode = 'autocomplete',
 }: {
