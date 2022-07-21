@@ -61,7 +61,8 @@ describe('basic search', () => {
     it('correctly implements TF-IDF ranking', () => {
         //> In this example, "mango" has much higher IDF (is a higher-signal
         //  word) in the corpus than "apple", which appears in nearly every
-        //  document. Therefore,
+        //  document. Therefore, documents that mention "mango" more times
+        //  (relative to the length of the document) should rank higher.
         assert.deepEqual(
             search([
                 // matches

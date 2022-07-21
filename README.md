@@ -57,13 +57,13 @@ function search<T>(
 ): T[]
 ```
 
-- `items` is a list of items to search with a text query. Typically `items` will be an array of strings or an array of objects with some string property.
+- `items` is a list of items to search. Typically `items` will be an array of strings or an array of objects with some string property.
 - `query` is a string query with which to search the list of items.
 - `by` (_optional_) is a predicate function that takes an item from `items` and returns a string value by which to search for that item. For example, if `items` is a list of objects like `{ name: 'Linus' }`, `by` will need to be a function `x => x.name`. This has the value `x => String(x)` by default, which works for an `items` of type `string[]`.
 - `options` (_optional_) is a dictionary of options:
     - `caseSensitive` makes a search case-sensitive. It's `false` by default.
     - `mode` controls the way in which incomplete query words are matched:
-        - `mode: 'word'` requires every query word match only full, exact words rather than parts of words. For example, the query "California" will match "University of **California**" but not "**California**n University".
+        - `mode: 'word'` requires every query word to match only full, exact words rather than parts of words. For example, the query "California" will match "University of **California**" but not "**California**n University".
         - `mode: 'prefix'` means that every query word may be an incomplete "prefix" of the matched word. "Uni Cali" will match both "**Uni**versity of **Cali**fornia" and "**Cali**fornian **Uni**versity" Even in this mode, every query word must match somewhere — "**Cali**fornia" is not a match, because it doesn't match the query word "Uni".
         - `mode: 'autocomplete'` is a hybrid of the other two modes that's useful when used in autocomplete-style searches, where a user is continuously typing in a query as search results are being returned. This mode is identical to `mode: 'word'`, except that the last query word may be incomplete like in `mode: 'prefix'`. It means "University of Cali" will match "**University of Cali**fornia", which is useful because the user may find their match before having typed in their full query.
 

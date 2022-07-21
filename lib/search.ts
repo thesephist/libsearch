@@ -1,36 +1,11 @@
 //> **libsearch** is the core text search algorithm that I've polished and
 //  reused over the years across [many of my personal
-//  projects](https://thesephist/projects) for fast and simple full-text
+//  projects](https://thesephist.com/projects) for fast and simple full-text
 //  search, packaged into a small single-purpose JavaScript library.
 //
-//  For how to import and use in your own project, and for canonical
-//  documentation, check out the [GitHub repository
+//  For how libsearch works, how to import and use in your own project, and
+//  canonical documentation, check out the [GitHub repository
 //  page](https://github.com/thesephist/libsearch).
-
-//> ## Basic principles
-//
-//  libsearch uses two tricks to return full-text search results that are
-//  reasonably good: (1) index-free, regular expression-based string search and
-//  (2) TF-IDF ranking based on those RegExp matches:
-//
-//  1. Rather than using a pre-built index that maps tokens to documents, which
-//     requires maintenance to be kept up-to-date every time the underlying
-//     corpus changes, libsearch transforms the search query into regular
-//     expressions that progressively filter the corpus. In theory, this is
-//     O(n), but in practice, for small enough n (MBs of text), this is good
-//     enough.
-//  2. The conventional TF-IDF formula requires knowing the number of tokens in
-//     every document. This requires either a pre-built index, or is
-//     computationally expensive, so instead we approximate this using the
-//     character count of the document. Using JavaScript's RegExp#exec with a
-//     global regular expression lets us quickly count the number of matches of
-//     a keyword in a document. Using these tricks, libsearch uses the formula:
-//
-//     ```js
-//     (# tokens / doc.length) * log(# docs / # matching docs)
-//     ```
-
-//> ## Implementation
 
 //> To turn every potential query into a regular expression, we need to be able
 //  to escape characters that are significant in RegExp.
@@ -136,7 +111,7 @@ export function search<T>(items: T[], query: string, by: (_it: T) => string = x 
         })
     }, items);
 
-    //> Sort the results list by our ranking metric, TF-IDF
+    //> Sort the results list by our ranking metric, TF-IDF.
     return sortBy(results, result => tfidf.get(result));
 }
 

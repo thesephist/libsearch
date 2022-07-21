@@ -18,61 +18,36 @@
             <pre></pre>
         </div>
         <div class="line"><div class="doc"><p><strong>libsearch</strong> is the core text search algorithm that I&#39;ve polished and
-reused over the years across <a href="https://thesephist/projects">many of my personal
+reused over the years across <a href="https://thesephist.com/projects">many of my personal
 projects</a> for fast and simple full-text
 search, packaged into a small single-purpose JavaScript library.</p>
-<p>For how to import and use in your own project, and for canonical
-documentation, check out the <a href="https://github.com/thesephist/libsearch">GitHub repository
+<p>For how libsearch works, how to import and use in your own project, and
+canonical documentation, check out the <a href="https://github.com/thesephist/libsearch">GitHub repository
 page</a>.</p>
 </div><pre class="source javascript"><strong class="lineNumber">9</strong></pre></div>
 <div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber"></strong></pre></div>
-<div class="line"><div class="doc"><h2 id="basic-principles">Basic principles</h2>
-<p>libsearch uses two tricks to return full-text search results that are
-reasonably good: (1) index-free, regular expression-based string search and
-(2) TF-IDF ranking based on those RegExp matches:</p>
-<ol>
-<li>Rather than using a pre-built index that maps tokens to documents, which
-requires maintenance to be kept up-to-date every time the underlying
-corpus changes, libsearch transforms the search query into regular
-expressions that progressively filter the corpus. In theory, this is
-O(n), but in practice, for small enough n (MBs of text), this is good
-enough.</li>
-<li>The conventional TF-IDF formula requires knowing the number of tokens in
-every document. This requires either a pre-built index, or is
-computationally expensive, so instead we approximate this using the
-character count of the document. Using JavaScript&#39;s RegExp#exec with a
-global regular expression lets us quickly count the number of matches of
-a keyword in a document. Using these tricks, libsearch uses the formula:</li>
-</ol>
-<pre><code class="language-js">(# tokens / doc.length) * log(# docs / # matching docs)
-</code></pre>
-</div><pre class="source javascript"><strong class="lineNumber">32</strong></pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber"></strong></pre></div>
-<div class="line"><div class="doc"><h2 id="implementation">Implementation</h2>
-</div><pre class="source javascript"><strong class="lineNumber">34</strong></pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber"></strong></pre></div>
 <div class="line"><div class="doc"><p>To turn every potential query into a regular expression, we need to be able
 to escape characters that are significant in RegExp.</p>
-</div><pre class="source javascript"><strong class="lineNumber">37</strong>function escapeForRegExp(text: string): string {</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">38</strong>    return text.replace(/[.*+?^${}[\]()|\\]/g, '\\$1');</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">39</strong>}</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">40</strong></pre></div>
+</div><pre class="source javascript"><strong class="lineNumber">12</strong>function escapeForRegExp(text: string): string {</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">13</strong>    return text.replace(/[.*+?^${}[\]()|\\]/g, '\\$1');</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">14</strong>}</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">15</strong></pre></div>
 <div class="line"><div class="doc"><p>Utility function for sorting an array by some predicate, rather than a
 comparator function. This implementation assumes <code>by(it)</code> is very cheap.</p>
-</div><pre class="source javascript"><strong class="lineNumber">43</strong>function sortBy&#60;T&#62;(items: T[], by: (_it: T) =&#62; any): T[] {</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">44</strong>    return items.sort((a, b) =&#62; {</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">45</strong>        const aby = by(a);</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">46</strong>        const bby = by(b);</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">47</strong>        if (aby &#60; bby) {</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">48</strong>            return 1;</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">49</strong>        }</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">50</strong>        if (bby &#60; aby) {</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">51</strong>            return -1;</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">52</strong>        }</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">53</strong>        return 0;</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">54</strong>    });</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">55</strong>}</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">56</strong></pre></div>
+</div><pre class="source javascript"><strong class="lineNumber">18</strong>function sortBy&#60;T&#62;(items: T[], by: (_it: T) =&#62; any): T[] {</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">19</strong>    return items.sort((a, b) =&#62; {</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">20</strong>        const aby = by(a);</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">21</strong>        const bby = by(b);</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">22</strong>        if (aby &#60; bby) {</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">23</strong>            return 1;</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">24</strong>        }</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">25</strong>        if (bby &#60; aby) {</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">26</strong>            return -1;</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">27</strong>        }</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">28</strong>        return 0;</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">29</strong>    });</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">30</strong>}</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">31</strong></pre></div>
 <div class="line"><div class="doc"><p>The search function takes:</p>
 <ul>
 <li><code>items</code>, the list of items to search</li>
@@ -87,82 +62,82 @@ list and returns the string that should be matched with the query</li>
 <li><code>mode</code>: which is &#39;word&#39;, &#39;prefix&#39;, or &#39;autocomplete&#39; (&#39;autocomplete&#39; by
 default), determining the way in which partial matches are processed</li>
 </ul>
-</div><pre class="source javascript"><strong class="lineNumber">68</strong>export function search&#60;T&#62;(items: T[], query: string, by: (_it: T) =&#62; string = x =&#62; String(x), {</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">69</strong>    caseSensitive = false,</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">70</strong>    mode = 'autocomplete',</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">71</strong>}: {</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">72</strong>    caseSensitive?: boolean;</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">73</strong>    mode?: 'word' | 'prefix' | 'autocomplete';</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">74</strong>} = {}) {</pre></div>
+</div><pre class="source javascript"><strong class="lineNumber">43</strong>export function search&#60;T&#62;(items: T[], query: string, by: (_it: T) =&#62; string = x =&#62; String(x), {</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">44</strong>    caseSensitive = false,</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">45</strong>    mode = 'autocomplete',</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">46</strong>}: {</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">47</strong>    caseSensitive?: boolean;</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">48</strong>    mode?: 'word' | 'prefix' | 'autocomplete';</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">49</strong>} = {}) {</pre></div>
 <div class="line"><div class="doc"><p><code>countMatches</code> counts the number of times <code>regexp</code> occurs in the string
 <code>s</code>. We need this information for ranking, where documents that mention
 the keyword more times (relative to the total word count of the
 document) are ranked higher.</p>
-</div><pre class="source javascript"><strong class="lineNumber">79</strong>    function countMatches(s: string, regexp: RegExp): number {</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">80</strong>        let i = 0;</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">81</strong>        while (regexp.exec(s) !== null) {</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">82</strong>            i ++;</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">83</strong>        }</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">84</strong>        return i;</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">85</strong>    }</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">86</strong></pre></div>
+</div><pre class="source javascript"><strong class="lineNumber">54</strong>    function countMatches(s: string, regexp: RegExp): number {</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">55</strong>        let i = 0;</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">56</strong>        while (regexp.exec(s) !== null) {</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">57</strong>            i ++;</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">58</strong>        }</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">59</strong>        return i;</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">60</strong>    }</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">61</strong></pre></div>
 <div class="line"><div class="doc"><p>We chunk up the query string into a list of &quot;words&quot;, each of which will
 become a regular expression filter.</p>
-</div><pre class="source javascript"><strong class="lineNumber">89</strong>    const words = query</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">90</strong>        .trim()</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">91</strong>        .split(/\s+/)</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">92</strong>        .filter(s =&#62; s !== '');</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">93</strong></pre></div>
+</div><pre class="source javascript"><strong class="lineNumber">64</strong>    const words = query</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">65</strong>        .trim()</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">66</strong>        .split(/\s+/)</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">67</strong>        .filter(s =&#62; s !== '');</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">68</strong></pre></div>
 <div class="line"><div class="doc"><p>Short-circuit if the search query is empty -- return the original list.
 This is a sensible default because in most apps this corresponds to the
 &quot;home view&quot; of the list, where a search has not been performed.</p>
-</div><pre class="source javascript"><strong class="lineNumber">97</strong>    if (words.length === 0) {</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">98</strong>        return items;</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">99</strong>    }</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">100</strong></pre></div>
+</div><pre class="source javascript"><strong class="lineNumber">72</strong>    if (words.length === 0) {</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">73</strong>        return items;</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">74</strong>    }</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">75</strong></pre></div>
 <div class="line"><div class="doc"><p>For every word in the search query, we&#39;re going to keep track of every
 document&#39;s TF-IDF value in this map, and aggregate them together by the
 end for sorting.</p>
-</div><pre class="source javascript"><strong class="lineNumber">104</strong>    const tfidf = new Map&#60;T, number&#62;();</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">105</strong></pre></div>
+</div><pre class="source javascript"><strong class="lineNumber">79</strong>    const tfidf = new Map&#60;T, number&#62;();</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">80</strong></pre></div>
 <div class="line"><div class="doc"><p>Iterate through every word in the query and progressively filter down
 <code>items</code> to just the documents that match every query word.</p>
-</div><pre class="source javascript"><strong class="lineNumber">108</strong>    const results = words.reduce((results, word, i) =&#62; {</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">109</strong>        const isLastWord = i + 1 === words.length;</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">110</strong>        const regexp = new RegExp(</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">111</strong>            '(^|\\W)'</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">112</strong>                + escapeForRegExp(word)</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">113</strong>                + ((mode === 'autocomplete' &#38;&#38; isLastWord) || mode === 'prefix' ? '' : '($|\\W)'),</pre></div>
+</div><pre class="source javascript"><strong class="lineNumber">83</strong>    const results = words.reduce((results, word, i) =&#62; {</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">84</strong>        const isLastWord = i + 1 === words.length;</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">85</strong>        const regexp = new RegExp(</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">86</strong>            '(^|\\W)'</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">87</strong>                + escapeForRegExp(word)</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">88</strong>                + ((mode === 'autocomplete' &#38;&#38; isLastWord) || mode === 'prefix' ? '' : '($|\\W)'),</pre></div>
 <div class="line"><div class="doc"><p>The &#39;u&#39; flag for Unicode used to be used here, but was removed
 because it was (1) across-the-board too slow, and removing it
 made a statistically significant speed improvement, and (2)
 caused at least Chrome to have strange performance cliffs in
 unpredictable ways where certain RegExp operations would take
 10s of ms.</p>
-</div><pre class="source javascript"><strong class="lineNumber">120</strong>            caseSensitive ? 'mg' : 'img'</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">121</strong>        );</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">122</strong>        return results.filter(result =&#62; {</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">123</strong>            const text = by(result);</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">124</strong>            const count = countMatches(text, regexp);</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">125</strong>            if (count === 0) {</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">126</strong>                return false;</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">127</strong>            }</pre></div>
+</div><pre class="source javascript"><strong class="lineNumber">95</strong>            caseSensitive ? 'mg' : 'img'</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">96</strong>        );</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">97</strong>        return results.filter(result =&#62; {</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">98</strong>            const text = by(result);</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">99</strong>            const count = countMatches(text, regexp);</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">100</strong>            if (count === 0) {</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">101</strong>                return false;</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">102</strong>            }</pre></div>
 <div class="line"><div class="doc"><p>Compute the TF-IDF value for this <code>word</code>, and add it to this
 result&#39;s TF-IDF value so far.</p>
-</div><pre class="source javascript"><strong class="lineNumber">130</strong>            tfidf.set(</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">131</strong>                result,</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">132</strong>                (tfidf.get(result) || 0)</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">133</strong>                    + (count / text.length * Math.log(items.length / results.length))</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">134</strong>            );</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">135</strong>            return true;</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">136</strong>        })</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">137</strong>    }, items);</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">138</strong></pre></div>
-<div class="line"><div class="doc"><p>Sort the results list by our ranking metric, TF-IDF</p>
-</div><pre class="source javascript"><strong class="lineNumber">140</strong>    return sortBy(results, result =&#62; tfidf.get(result));</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">141</strong>}</pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">142</strong></pre></div>
-<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">143</strong></pre></div>
+</div><pre class="source javascript"><strong class="lineNumber">105</strong>            tfidf.set(</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">106</strong>                result,</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">107</strong>                (tfidf.get(result) || 0)</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">108</strong>                    + (count / text.length * Math.log(items.length / results.length))</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">109</strong>            );</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">110</strong>            return true;</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">111</strong>        })</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">112</strong>    }, items);</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">113</strong></pre></div>
+<div class="line"><div class="doc"><p>Sort the results list by our ranking metric, TF-IDF.</p>
+</div><pre class="source javascript"><strong class="lineNumber">115</strong>    return sortBy(results, result =&#62; tfidf.get(result));</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">116</strong>}</pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">117</strong></pre></div>
+<div class="line"><div class="doc"></div><pre class="source javascript"><strong class="lineNumber">118</strong></pre></div>
     </main>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/github-gist.min.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
