@@ -1,17 +1,43 @@
-//> ## Basic principles
+//> **libsearch** is the core text search algorithm that I've polished and
+//  reused over the years across [many of my personal
+//  projects](https://thesephist/projects) for fast and simple full-text
+//  search, packaged into a small single-purpose JavaScript library.
+//
+//  For how to import and use in your own project, and for canonical
+//  documentation, check out the [GitHub repository
+//  page](https://github.com/thesephist/libsearch).
 
-//> TODO: Explain stuff...
+//> ## Basic principles
+//
+//  libsearch uses two tricks to return full-text search results that are
+//  reasonably good: (1) index-free, regular expression-based string search and
+//  (2) TF-IDF ranking based on those RegExp matches:
+//
+//  1. Rather than using a pre-built index that maps tokens to documents, which
+//     requires maintenance to be kept up-to-date every time the underlying
+//     corpus changes, libsearch transforms the search query into regular
+//     expressions that progressively filter the corpus. In theory, this is
+//     O(n), but in practice, for small enough n (MBs of text), this is good
+//     enough.
+//  2. The conventional TF-IDF formula requires knowing the number of tokens in
+//     every document. This requires either a pre-built index, or is
+//     computationally expensive, so instead we approximate this using the
+//     character count of the document. Using JavaScript's RegExp#exec with a
+//     global regular expression lets us quickly count the number of matches of
+//     a keyword in a document. Using these tricks, libsearch uses the formula:
+//
+//         # tokens / doc.length * log(# docs / # matching docs)
 
 //> ## Implementation
 
 //> To turn every potential query into a regular expression, we need to be able
-//  to escape key characters.
+//  to escape characters that are significant in RegExp.
 function escapeForRegExp(text: string): string {
     return text.replace(/[.*+?^${}[\]()|\\]/g, '\\$1');
 }
 
 //> Utility function for sorting an array by some predicate, rather than a
-//  comparator function.
+//  comparator function. This implementation assumes `by(it)` is very cheap.
 function sortBy<T>(items: T[], by: (_it: T) => any): T[] {
     return items.sort((a, b) => {
         const aby = by(a);
@@ -26,21 +52,28 @@ function sortBy<T>(items: T[], by: (_it: T) => any): T[] {
     });
 }
 
-//> The main search function takes:
+//> The search function takes:
 //  - `items`, the list of items to search
 //  - `query`, the search query text
-//  - `by`, which is a predicate (string, number, or function) that takes an item from the items list and returns the string that should be matched with the query
+//  - `by`, which is a predicate function that takes an item from the items
+//    list and returns the string that should be matched with the query
+//  - `options`, a dictionary of options:
 //
 //  Options include
 //  - `caseSensitive`, which is self-explanatory
-//  - `mode`: which is 'word' or 'prefix' ('prefix' by default)
+//  - `mode`: which is 'word', 'prefix', or 'autocomplete' ('autocomplete' by
+//    default), determining the way in which partial matches are processed
 export function search<T>(items: T[], query: string, by: (_it: T) => any = x => x, {
     caseSensitive = false,
-    mode = 'prefix',
+    mode = 'autocomplete',
 }: {
     caseSensitive?: boolean;
-    mode?: 'word' | 'prefix';
+    mode?: 'word' | 'prefix' | 'autocomplete';
 } = {}) {
+    //> `countMatches` counts the number of times `regexp` occurs in the string
+    //  `s`. We need this information for ranking, where documents that mention
+    //  the keyword more times (relative to the total word count of the
+    //  document) are ranked higher.
     function countMatches(s: string, regexp: RegExp): number {
         let i = 0;
         while (regexp.exec(s) !== null) {
@@ -49,44 +82,59 @@ export function search<T>(items: T[], query: string, by: (_it: T) => any = x => 
         return i;
     }
 
+    //> We chunk up the query string into a list of "words", each of which will
+    //  become a regular expression filter.
     const words = query
         .trim()
-        .split(' ')
+        .split(/\s+/)
         .filter(s => s !== '');
 
+    //> Short-circuit if the search query is empty -- return the original list.
+    //  This is a sensible default because in most apps this corresponds to the
+    //  "home view" of the list, where a search has not been performed.
     if (words.length === 0) {
         return items;
     }
 
+    //> For every word in the search query, we're going to keep track of every
+    //  document's TF-IDF value in this map, and aggregate them together by the
+    //  end for sorting.
     const tfidf = new Map<T, number>();
-    const suggestions = words.reduce((suggestions, word, i) => {
+
+    //> Iterate through every word in the query and progressively filter down
+    //  `items` to just the documents that match every query word.
+    const results = words.reduce((results, word, i) => {
         const isLastWord = i + 1 === words.length;
         const regexp = new RegExp(
-            '(^|\\W)' + escapeForRegExp(word) + (isLastWord || mode === 'prefix' ? '' : '($|\\W)'),
-            // the "u" flag for Unicode used to be used here, but was removed
-            // because it was (1) across-the-board too slow, and removing it
-            // made a statistically significant speed improvement, and (2)
-            // caused at least Chrome to have strange performance cliffs in
-            // unpredictable ways where certain regexp operations would take
-            // 10s of ms.
+            '(^|\\W)'
+                + escapeForRegExp(word)
+                + ((mode === 'autocomplete' && isLastWord) || mode === 'prefix' ? '' : '($|\\W)'),
+            //> The 'u' flag for Unicode used to be used here, but was removed
+            //  because it was (1) across-the-board too slow, and removing it
+            //  made a statistically significant speed improvement, and (2)
+            //  caused at least Chrome to have strange performance cliffs in
+            //  unpredictable ways where certain RegExp operations would take
+            //  10s of ms.
             caseSensitive ? 'mg' : 'img'
         );
-        return suggestions.filter(sugg => {
-            const text = by(sugg);
+        return results.filter(result => {
+            const text = by(result);
             const count = countMatches(text, regexp);
             if (count === 0) {
                 return false;
             }
-            //> TF-IDF weighting per-term
+            //> Compute the TF-IDF value for this `word`, and add it to this
+            //  result's TF-IDF value so far.
             tfidf.set(
-                sugg,
-                (tfidf.get(sugg) || 0)
-                    + (count / text.length * Math.log(items.length / suggestions.length))
+                result,
+                (tfidf.get(result) || 0)
+                    + (count / text.length * Math.log(items.length / results.length))
             );
             return true;
         })
     }, items);
 
-    return sortBy(suggestions, sugg => tfidf.get(sugg));
+    //> Sort the results list by our ranking metric, TF-IDF
+    return sortBy(results, result => tfidf.get(result));
 }
 
