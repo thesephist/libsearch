@@ -52,6 +52,12 @@ describe('basic search', () => {
         ]);
     });
 
+    it('search query may contain newlines, tabs, and multiple consecutive spaces', () => {
+        assert.deepEqual(search(ITEMS, '  linus\t is\nperson\t', x => x.name), [
+            item('linus is a person'),
+        ]);
+    });
+
     it('correctly implements TF-IDF ranking', () => {
         //> In this example, "mango" has much higher IDF (is a higher-signal
         //  word) in the corpus than "apple", which appears in nearly every
