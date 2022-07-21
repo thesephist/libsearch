@@ -4,7 +4,7 @@
 [![TypeScript types](https://img.shields.io/npm/types/libsearch.svg)](https://github.com/thesephist/libsearch/tree/main/lib/search.ts)
 [![Build Status](https://app.travis-ci.com/thesephist/libsearch.svg?branch=main)](https://app.travis-ci.com/thesephist/libsearch)
 
-Simple, index-free text search for JavaScript, used across my personal projects like [YC Vibe Check](https://ycvibecheck.com/) and my personal productivity software.
+Simple, index-free text search for JavaScript, used across my personal projects like [YC Vibe Check](https://ycvibecheck.com/), [linus.zone/entr](https://linus.zone/entr), and my personal productivity software. Read the [annotated source](https://thesephist.github.io/libsearch/lib/search.ts.html) to understand how it works under the hood.
 
 ## The API
 
@@ -76,7 +76,7 @@ You can find more examples of how these options combine together in the [unit te
 Drop this into your HTML:
 
 ```html
-<script src="https://unpkg.com/libsearch/dist/browser.js">
+<script src="https://unpkg.com/libsearch/dist/browser.js"></script>
 ```
 
 This will expose the `search` function as `window.libsearch.search`.

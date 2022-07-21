@@ -26,7 +26,9 @@
 //     global regular expression lets us quickly count the number of matches of
 //     a keyword in a document. Using these tricks, libsearch uses the formula:
 //
-//         # tokens / doc.length * log(# docs / # matching docs)
+//     ```js
+//     (# tokens / doc.length) * log(# docs / # matching docs)
+//     ```
 
 //> ## Implementation
 
