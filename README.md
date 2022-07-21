@@ -49,7 +49,7 @@ More formally, libsearch exposes a single API, the `search` function. This funct
 function search<T>(
     items: T[],
     query: string,
-    by?: (it: T) => any,
+    by?: (it: T) => string,
     options?: {
         caseSensitive: boolean,
         mode: 'word' | 'prefix' | 'autocomplete',
@@ -59,7 +59,7 @@ function search<T>(
 
 - `items` is a list of items to search with a text query. Typically `items` will be an array of strings or an array of objects with some string property.
 - `query` is a string query with which to search the list of items.
-- `by` (_optional_) is a predicate function that takes an item from `items` and returns a string value by which to search for that item. For example, if `items` is a list of objects like `{ name: 'Linus' }`, `by` will need to be a function `x => x.name`. This has the value `x => x` by default, which works for an `items` of type `string[]`.
+- `by` (_optional_) is a predicate function that takes an item from `items` and returns a string value by which to search for that item. For example, if `items` is a list of objects like `{ name: 'Linus' }`, `by` will need to be a function `x => x.name`. This has the value `x => String(x)` by default, which works for an `items` of type `string[]`.
 - `options` (_optional_) is a dictionary of options:
     - `caseSensitive` makes a search case-sensitive. It's `false` by default.
     - `mode` controls the way in which incomplete query words are matched:
